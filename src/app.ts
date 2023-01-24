@@ -8,6 +8,7 @@ import log from "./utils/logger";
 
 const app = express();
 
+app.use(express.json());
 app.use(router);
 
 const port = config.get("port");

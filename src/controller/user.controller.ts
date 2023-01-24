@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CreateUserInput } from "../schema/user.schema";
 import { createUser } from "../service/user.service";
+import sendEmail from "../utils/mailer";
 
 export async function creaseUserHandler(
   req: Request<{}, {}, CreateUserInput>,
@@ -10,6 +11,13 @@ export async function creaseUserHandler(
 
   try {
     const user = await createUser(body);
+
+    await sendEmail({
+      from: "test@gmail.com",
+      to: user.email,
+      subject: "Please verify your account",
+      text: `Verification code ${user.verificationCode}. Id: ${user._id}`,
+    });
 
     return res.send("User successfully created");
   } catch (e: any) {
