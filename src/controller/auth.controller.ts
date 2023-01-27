@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CreateSessionInput } from "../schema/auth.schema";
+import { signAccessToken, signRefreshToken } from "../service/auth.service";
 import { findUserByEmail } from "../service/user.service";
 
 export async function createSessionHandler(
@@ -24,4 +25,13 @@ export async function createSessionHandler(
   if (!isValid) {
     return res.send(message);
   }
+
+  const accessToken = signAccessToken(user);
+
+  const refreshToken = await signRefreshToken({ userId: user._id });
+
+  return res.send({
+    accessToken,
+    refreshToken,
+  });
 }
